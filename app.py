@@ -4,8 +4,17 @@ import subprocess, tempfile, os, uuid
 from runners.c_runner import run_c
 from runners.cpp_runner import run_cpp
 from runners.java_runner import run_java
+from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins = ["*"],
+    allow_credentials = True,
+    allow_methods = ["*"],
+    allow_headers = ["*"],
+)
 
 class Code(BaseModel):
     language : str
