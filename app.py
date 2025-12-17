@@ -1,9 +1,9 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 import subprocess, tempfile, os, uuid
-from code_runner_backend.runners.c_runner import run_c
-from code_runner_backend.runners.cpp_runner import run_cpp
-from code_runner_backend.runners.java_runner import run_java
+from runners.c_runner import run_c
+from runners.cpp_runner import run_cpp
+from runners.java_runner import run_java
 
 app = FastAPI()
 
