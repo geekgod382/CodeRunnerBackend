@@ -1,0 +1,33 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+import subprocess, tempfile, os, uuid
+from code_runner_backend.runners.c_runner import run_c
+from code_runner_backend.runners.cpp_runner import run_cpp
+from code_runner_backend.runners.java_runner import run_java
+
+app = FastAPI()
+
+class Code(BaseModel):
+    language : str
+    code : str
+
+TIMEOUT = 3
+
+@app.post('/run')
+def run_code(payload : Code):
+    lang, code = payload.language, payload.code
+    with tempfile.TemporaryDirectory() as tmp:
+        try:
+            if lang == "c":
+                return run_c(code, tmp)
+            elif lang == 'cpp':
+                return run_cpp(code, tmp)
+            elif lang == 'java':
+                return run_java(code, tmp)
+            else:
+                return {'error' : 'Unsupported language'}
+            
+        except subprocess.TimeoutExpired:
+            return {'error' : 'Execution timed out'}
+        except Exception as e:
+            return {'error' : str(e)}
