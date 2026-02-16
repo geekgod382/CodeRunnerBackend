@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Header, HTTPException
 from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import subprocess, tempfile, os, uuid
@@ -7,6 +7,8 @@ from runners.cpp_runner import run_cpp
 from runners.java_runner import run_java
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
+from jose import jwt
+import os
 
 app = FastAPI()
 
@@ -25,6 +27,16 @@ class Code(BaseModel):
 TIMEOUT = 3
 
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
+
+SUPABASE_JWT_SECRET = os.getenv("SUPABASE_JWT_SECRET")
+
+async def verify_token(authorization : str = Header(...)):
+    try:
+        token = authorization.replace("Bearer ", "")
+        payload = jwt.decode(token, SUPABASE_JWT_SECRET, algorithms=["HS256"], audience="authenticated")
+        return payload
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid token")
 
 # Mount the static directory for serving CSS, JS, images, etc.
 app.mount('/static', StaticFiles(directory=STATIC_DIR), name="static")
