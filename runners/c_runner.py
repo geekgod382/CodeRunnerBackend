@@ -11,7 +11,7 @@ def run_c(code, tmp):
             ["gcc", src, "-o", exe],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=3
+            timeout=10
         )
         if compile_proc.returncode != 0:
             return {"error": compile_proc.stderr.decode()}
