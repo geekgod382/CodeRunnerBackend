@@ -1,5 +1,5 @@
 import subprocess, os
-from mem_limit import memory_limit
+from .mem_limit import memory_limit
 
 def run_c(code, tmp):
     src = os.path.join(tmp, 'main.c')
