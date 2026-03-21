@@ -8,7 +8,7 @@ def run_cpp(code, tmp):
     open(src, 'w').write(code)
     try:
         compile_proc = subprocess.run(
-            ["gcc", src, "-o", exe],
+            ["g++", src, "-o", exe],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             timeout=3
@@ -25,8 +25,8 @@ def run_cpp(code, tmp):
             [exe],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=2,
-            preexec_fn=memory_limit   # 👈 tera function
+            timeout=3,
+            preexec_fn=memory_limit
         )
 
         if run_proc.returncode != 0:

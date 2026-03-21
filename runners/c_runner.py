@@ -24,7 +24,7 @@ def run_c(code, tmp):
             [exe],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=2,
+            timeout=3,
             preexec_fn=memory_limit
         )
 
