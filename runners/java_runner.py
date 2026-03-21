@@ -1,19 +1,36 @@
 import subprocess, os
+from mem_limit import memory_limit
 
 def run_java(code, tmp):
     src = os.path.join(tmp, 'Main.java')
 
     open(src, 'w').write(code)
-    subprocess.run(
-        ['javac', src],
-        stderr=subprocess.PIPE,
-        check=True
-    )
+    try:
+        compile_proc = subprocess.run(
+            ["javac", src],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=3
+        )
+        if compile_proc.returncode != 0:
+            return {"error": compile_proc.stderr.decode()}
 
-    out = subprocess.check_output(
-        ['java', '-cp', tmp, 'Main'],
-        stderr=subprocess.STDOUT,
-        timeout=3
-    )
+    except subprocess.TimeoutExpired:
+        return {"error": "Compilation Time Limit Exceeded"}
 
-    return {'output' : out.decode()}
+    try:
+        run_proc = subprocess.run(
+            ["java", "-cp", tmp, "Main"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=3,
+            preexec_fn=memory_limit
+        )
+
+        if run_proc.returncode != 0:
+            return {"error": run_proc.stderr.decode()}
+
+        return {"output": run_proc.stdout.decode()}
+
+    except subprocess.TimeoutExpired:
+        return {"error": "Time Limit Exceeded"}
