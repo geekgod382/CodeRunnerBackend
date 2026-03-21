@@ -25,7 +25,7 @@ def run_cpp(code, tmp):
             [exe],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=3,
+            timeout=10,
             preexec_fn=memory_limit
         )
 

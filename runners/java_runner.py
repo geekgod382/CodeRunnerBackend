@@ -23,7 +23,7 @@ def run_java(code, tmp):
             ["java", "-cp", tmp, "Main"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
-            timeout=3,
+            timeout=10,
             preexec_fn=memory_limit
         )
 
