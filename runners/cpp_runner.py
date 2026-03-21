@@ -1,20 +1,38 @@
 import subprocess, os
+from mem_limit import memory_limit
 
 def run_cpp(code, tmp):
     src = os.path.join(tmp, 'main.cpp')
     exe = os.path.join(tmp, 'a.out')
     
     open(src, 'w').write(code)
-    subprocess.run(
-        ['g++', src, '-o', exe],
-        stderr=subprocess.PIPE,
-        check=True
-    )
+    try:
+        compile_proc = subprocess.run(
+            ["gcc", src, "-o", exe],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=3
+        )
+        if compile_proc.returncode != 0:
+            return {"error": compile_proc.stderr.decode()}
 
-    out = subprocess.check_output(
-        [exe],
-        stderr=subprocess.STDOUT,
-        timeout=3
-    )
+    except subprocess.TimeoutExpired:
+        return {"error": "Compilation Time Limit Exceeded"}
 
-    return {'output' : out.decode()}
+    # 🔹 EXECUTE (with timeout + limits)
+    try:
+        run_proc = subprocess.run(
+            [exe],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            timeout=2,
+            preexec_fn=memory_limit   # 👈 tera function
+        )
+
+        if run_proc.returncode != 0:
+            return {"error": run_proc.stderr.decode()}
+
+        return {"output": run_proc.stdout.decode()}
+
+    except subprocess.TimeoutExpired:
+        return {"error": "Time Limit Exceeded"}
