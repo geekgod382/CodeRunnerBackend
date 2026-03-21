@@ -20,7 +20,8 @@ def run_java(code, tmp):
 
     try:
         run_proc = subprocess.run(
-            ["java", "-cp", tmp, "Main"],
+            ["java", "Main"],
+            cwd=tmp,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             timeout=10,
