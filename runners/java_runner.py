@@ -25,7 +25,6 @@ def run_java(code, tmp):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             timeout=10,
-            preexec_fn=memory_limit
         )
 
         if run_proc.returncode != 0:
